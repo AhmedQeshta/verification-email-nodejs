@@ -94,7 +94,7 @@ The package.json file should look like this :
 #### In root Folder
 
 > server\index.js
-```javascript=1
+```js
 const app = require('./app');
 
 const port = app.get('port');
@@ -106,7 +106,7 @@ app.listen(port, () => {
 ```
 > server\app.js
 
-```javascript=1
+```js
 require('env2')('.env');
 const express = require('express');
 const compression = require('compression');
@@ -143,7 +143,7 @@ module.exports = app;
 #### In Routes Folder
 
 > server\routes\index.js
-```javascript=1
+```js
 const { Router } = require('express');
 const auth = require('./auth');
 
@@ -156,7 +156,7 @@ module.exports = routes;
 ```
 
 > server\routes\auth.js
-```javascript=1
+```js
 const { Router } = require('express');
 const { addUser, verifyUser, getUsers } = require('../controllers');
 
@@ -177,7 +177,7 @@ module.exports = user;
 
 > server\error\index.js
 
-```javascript=1
+```js
 const notFundError = require('./notFoundError');
 const serverError = require('./serverError');
 
@@ -186,7 +186,7 @@ module.exports = { notFundError, serverError };
 
 > server\error\notFoundError.js
 
-```javascript=1
+```js
 const notFoundError = (_, res) => {
   res.status(404).json({ status: 404, message: 'Not Found Page' });
 };
@@ -197,7 +197,7 @@ module.exports = notFoundError;
 
 > server\error\serverError.js
 
-```javascript=1
+```js
 const serverError = (error, _, res, next) => {
   if (error.status) {
     res.status(error.status).json({ status: error.status, message: error.message });
@@ -213,7 +213,7 @@ module.exports = serverError;
 #### In Controllers Folder
 
 >server\controllers\index.js
-```javascript=1
+```js
 const { addUser, verifyUser, getUsers } = require('./auth');
 
 module.exports = { addUser, verifyUser, getUsers };
@@ -221,7 +221,7 @@ module.exports = { addUser, verifyUser, getUsers };
 ```
 
 >server\controllers\auth\index.js
-```javascript=1
+```js
 const addUser = require('./addUser');
 const getUsers = require('./getUsers');
 const verifyUser = require('./verifyUser');
@@ -231,7 +231,7 @@ module.exports = { addUser, verifyUser, getUsers };
 ```
 
 >server\controllers\auth\addUser.js
-```javascript=1
+```js
 const { CustomError, addUserSchema, generateToken } = require('../../utils');
 const { User } = require('../../database');
 const { hash } = require('bcryptjs');
@@ -288,7 +288,7 @@ module.exports = addUser;
 
 
 >server\controllers\auth\verifyUser.js
-```javascript=1
+```js
 const { User } = require('../../database');
 const { checkToken, CustomError, paramsValidation } = require('../../utils');
 
@@ -324,7 +324,7 @@ module.exports = verifyUser;
 
 >server\controllers\auth\getUsers.js
 
-```javascript=1
+```js
 const { User } = require('../../database');
 
 const getUsers = async (_, res, next) => {
@@ -383,7 +383,7 @@ MAIL_PASS = passwor_mail
 #### In DataBase Folder
 >server\database\config\connection.js
 
-```javascript=1
+```js
 const { Sequelize } = require('sequelize');
 
 require('env2')('.env');
@@ -427,7 +427,7 @@ module.exports = sequelize;
 
 >server\database\models\index.js
 
-```javascript=1
+```js
 const User = require('./users');
 
 module.exports = { User };
@@ -435,7 +435,7 @@ module.exports = { User };
 
 >server\database\models\user.js
 
-```javascript=1
+```js
 const { DataTypes } = require('sequelize');
 
 const sequelize = require('../config/connection');
@@ -467,7 +467,7 @@ module.exports = User;
 
 >server\database\index.js
 
-```javascript=1
+```js
 const sequelize = require('./config/connection');
 const { User } = require('./models');
 
@@ -482,7 +482,7 @@ In the utils folder, create email folder then create configration and create tem
 
 >server\utils\email\index.js
 
-```javascript=1
+```js
 const nodemailer = require('nodemailer');
 
 const { EMAIL_SENDER, MAIL_HOST, MAIL_USER, MAIL_PASS } = process.env;
@@ -515,7 +515,7 @@ module.exports = sendEmail;
 
 
 >server\utils\email\templates\verifyEmail.js
-```javascript=1
+```js
 const styles = `  <style type="text/css">
 @media only screen and (min-width: 520px) {
 .u-row {
@@ -768,7 +768,7 @@ module.exports = {
 
 >server\utils\jwt.js
 
-```javascript=1
+```js
 const { sign, verify } = require('jsonwebtoken');
 
 const { JWT_SECRET } = process.env;
@@ -799,7 +799,7 @@ module.exports = {
 
 >server\utils\CustomError.js
 
-```javascript=1
+```js
 module.exports = {
   CustomError: (message, status, massages) => {
     const error = new Error(message);
@@ -814,7 +814,7 @@ module.exports = {
 
 >server\utils\validation\index.js
 
-```javascript=1
+```js
 const addUserSchema = require('./addUserSchema');
 const paramsValidation = require('./paramsValidation');
 
@@ -828,7 +828,7 @@ module.exports = {
 
 >server\utils\validation\paramsValidation.js
 
-```javascript=1
+```js
 const Joi = require('joi');
 
 const paramsValidation = Joi.object({
@@ -842,7 +842,7 @@ module.exports = paramsValidation;
 
 >server\utils\validation\addUserSchema.js
 
-```javascript=1
+```js
 const Joi = require('joi');
 
 const addUserSchema = Joi.object({
@@ -865,7 +865,7 @@ module.exports = addUserSchema;
 
 >server\utils\index.js
 
-```javascript=1
+```js
 const { CustomError } = require('./CustomError');
 const { addUserSchema, paramsValidation } = require('./validation');
 const { generateToken, checkToken } = require('./jwt');
