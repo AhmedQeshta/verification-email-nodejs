@@ -1,7 +1,11 @@
 const addUserSchema = require('./addUserSchema');
-const paramsValidation = require('./paramsValidation');
+const verifyUserSchema = require('./verifyUserSchema');
+const restPasswordSchema = require('./restPasswordSchema');
+const forgetPasswordSchema = require('./forgetPasswordSchema');
 
 module.exports = {
   addUserSchema,
-  paramsValidation,
+  verifyUserSchema,
+  restPasswordSchema,
+  forgetPasswordSchema,
 };

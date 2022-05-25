@@ -34,14 +34,13 @@ const addUser = async (req, res, next) => {
       algorithm: 'HS256',
     });
 
-    const html = verifyEmail(`${process.env.BASE_URL}api/v1/user/verify/${id}/${token}`);
+    const html = verifyEmail(`${process.env.BASE_URL}api/v1/user/verify/?token=${token}`);
     sendEmail(email, 'Verify Your Email', html);
 
     res.status(201).json({
       message: 'An Email sent to your account please verify',
     });
   } catch (error) {
-    console.log(error);
     if (error.name === 'ValidationError') {
       return next(CustomError(error.message, 400));
     }

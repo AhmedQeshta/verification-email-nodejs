@@ -1,3 +1,10 @@
-const { addUser, verifyUser, getUsers } = require('./auth');
+const {
+  addUser,
+  verifyUser,
+  getUsers,
+  forgetPassword,
+  restPassword,
+  formRestPassword,
+} = require('./auth');
 
-module.exports = { addUser, verifyUser, getUsers };
+module.exports = { addUser, verifyUser, getUsers, forgetPassword, restPassword, formRestPassword };

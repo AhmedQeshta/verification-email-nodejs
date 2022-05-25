@@ -1,11 +1,20 @@
 const { CustomError } = require('./CustomError');
-const { addUserSchema, paramsValidation } = require('./validation');
+const {
+  addUserSchema,
+  verifyUserSchema,
+  restPasswordSchema,
+  forgetPasswordSchema,
+} = require('./validation');
 const { generateToken, checkToken } = require('./jwt');
+const sendEmail = require('./email');
 
 module.exports = {
   CustomError,
   addUserSchema,
   generateToken,
   checkToken,
-  paramsValidation,
+  verifyUserSchema,
+  sendEmail,
+  restPasswordSchema,
+  forgetPasswordSchema,
 };

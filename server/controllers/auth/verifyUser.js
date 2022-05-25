@@ -1,24 +1,25 @@
 const { User } = require('../../database');
-const { checkToken, CustomError, paramsValidation } = require('../../utils');
+const { checkToken, CustomError, verifyUserSchema } = require('../../utils');
 
-const verifyUser = async ({ params }, res, next) => {
+const verifyUser = async ({ query }, res, next) => {
   try {
-    const { id, token } = await paramsValidation.validateAsync(params);
+    const { token } = await verifyUserSchema.validateAsync(query);
+
+    const { id } = await checkToken(token);
+
+    if (!id) throw CustomError('Sorry, Invalid link', 409);
 
     // Check if the gym already exists
     const user = await User.findByPk(id);
     // if is exist throw an error
     if (!user) throw CustomError('Sorry, Invalid link', 409);
 
-    const tokenChecked = await checkToken(token);
-
-    if (!tokenChecked) throw CustomError('Sorry, Invalid link', 409);
-
     await user.update({ verified: true });
 
     res.json({
       message: 'email verified successfully',
     });
+
   } catch (error) {
     if (error.name === 'ValidationError') {
       return next(CustomError(error.message, 400));
