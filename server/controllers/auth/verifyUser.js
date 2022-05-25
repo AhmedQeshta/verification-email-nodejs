@@ -23,6 +23,9 @@ const verifyUser = async ({ params }, res, next) => {
     if (error.name === 'ValidationError') {
       return next(CustomError(error.message, 400));
     }
+    if (error.name === 'TokenExpiredError') {
+      return next(CustomError('Sorry This link was Invalid, try Again', 500));
+    }
     return next(error);
   }
 };
