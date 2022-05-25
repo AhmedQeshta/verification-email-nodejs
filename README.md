@@ -1,6 +1,4 @@
 # Verification Email Useing Nodejs + Express + Postgress
-
-
 ![Verfication Email Useing Nodejs + Express + Postgress](https://cdn2.hubspot.net/hubfs/529456/Email_Verification_Header.png)
 
 ## How to verify user email address in node.js ?
@@ -9,18 +7,19 @@
 
 Every website should include an email verification feature. It will protect us against spammers. Because this is my first blog, I shall do my best. Let's get started coding.
 
-
 ### Create Node.js Folders App
 
-firstly strat create express server, use this command For that: 
+firstly strat create express server, use this command For that:
 
 Create Node.js App
+
 ```shell
     $ mkdir verification-email
     $ cd verification-email
 ```
 
 Next, we initialize the Node.js App with a package.json file:
+
 ```shell
   $ npm init -y
 ```
@@ -30,6 +29,7 @@ We need to install necessary modules.
 ```shell
   $ npm install express pg pg-hstore sequelize nodemailer joi env2 compression bcryptjs cors jsonwebtoken
 ```
+
 ```shell
   $ npm install nodemon -d
 ```
@@ -54,13 +54,7 @@ The package.json file should look like this :
   "scripts": {
     "dev": "nodemon server"
   },
-  "keywords": [
-    "nodejs",
-    "express",
-    "email",
-    "verification",
-    "email-verification"
-  ],
+  "keywords": ["nodejs", "express", "email", "verification", "email-verification"],
   "author": "Ahmed Qeshta",
   "license": "ISC",
   "dependencies": {
@@ -80,20 +74,19 @@ The package.json file should look like this :
     "nodemon": "^2.0.16"
   }
 }
-
 ```
+
 ### Project Structure
 
 ![Project Structure - part 1](https://i.imgur.com/qdpjtl7.png)
 ![Project Structure - part 2](https://i.imgur.com/RdIpT7y.png)
-
-
 
 ### Setup Express Web Server
 
 #### In root Folder
 
 > server\index.js
+
 ```js
 const app = require('./app');
 
@@ -102,8 +95,8 @@ const port = app.get('port');
 app.listen(port, () => {
   console.log(`server is running on http://localhost:${port}`);
 });
-
 ```
+
 > server\app.js
 
 ```js
@@ -137,12 +130,12 @@ app.use(notFundError);
 app.use(serverError);
 
 module.exports = app;
-
 ```
 
 #### In Routes Folder
 
 > server\routes\index.js
+
 ```js
 const { Router } = require('express');
 const auth = require('./auth');
@@ -156,6 +149,7 @@ module.exports = routes;
 ```
 
 > server\routes\auth.js
+
 ```js
 const { Router } = require('express');
 const { addUser, verifyUser, getUsers } = require('../controllers');
@@ -170,7 +164,6 @@ user.get('/', getUsers);
 user.get('/verify/:id/:token', verifyUser);
 
 module.exports = user;
-
 ```
 
 #### In Error Folder
@@ -192,7 +185,6 @@ const notFoundError = (_, res) => {
 };
 
 module.exports = notFoundError;
-
 ```
 
 > server\error\serverError.js
@@ -209,28 +201,28 @@ const serverError = (error, _, res, next) => {
 module.exports = serverError;
 ```
 
-
 #### In Controllers Folder
 
->server\controllers\index.js
+> server\controllers\index.js
+
 ```js
 const { addUser, verifyUser, getUsers } = require('./auth');
 
 module.exports = { addUser, verifyUser, getUsers };
-
 ```
 
->server\controllers\auth\index.js
+> server\controllers\auth\index.js
+
 ```js
 const addUser = require('./addUser');
 const getUsers = require('./getUsers');
 const verifyUser = require('./verifyUser');
 
 module.exports = { addUser, verifyUser, getUsers };
-
 ```
 
->server\controllers\auth\addUser.js
+> server\controllers\auth\addUser.js
+
 ```js
 const { CustomError, addUserSchema, generateToken } = require('../../utils');
 const { User } = require('../../database');
@@ -275,7 +267,6 @@ const addUser = async (req, res, next) => {
       message: 'An Email sent to your account please verify',
     });
   } catch (error) {
-    console.log(error);
     if (error.name === 'ValidationError') {
       return next(CustomError(error.message, 400));
     }
@@ -286,8 +277,8 @@ const addUser = async (req, res, next) => {
 module.exports = addUser;
 ```
 
+> server\controllers\auth\verifyUser.js
 
->server\controllers\auth\verifyUser.js
 ```js
 const { User } = require('../../database');
 const { checkToken, CustomError, paramsValidation } = require('../../utils');
@@ -314,15 +305,17 @@ const verifyUser = async ({ params }, res, next) => {
     if (error.name === 'ValidationError') {
       return next(CustomError(error.message, 400));
     }
+    if (error.name === 'TokenExpiredError') {
+      return next(CustomError('Sorry This link was Invalid, try Again', 500));
+    }
     return next(error);
   }
 };
 
 module.exports = verifyUser;
-
 ```
 
->server\controllers\auth\getUsers.js
+> server\controllers\auth\getUsers.js
 
 ```js
 const { User } = require('../../database');
@@ -344,28 +337,27 @@ module.exports = getUsers;
 
 ### Routes
 
-|  Methods  |   Route Urls    |  Actions  |
-| --------- | --------------- | --------- |
-|    GET    | /api/v1/user    | Get All User In DataBase      |
-|    POST    | /api/v1/user    | Create new User In DataBase      |
-|    GET    | /api/v1/user/verify/:id/:token    | verify Email link, was sent by email      |
-
-
+| Methods | Route Urls                     | Actions                              |
+| ------- | ------------------------------ | ------------------------------------ |
+| GET     | /api/v1/user                   | Get All User In DataBase             |
+| POST    | /api/v1/user                   | Create new User In DataBase          |
+| GET     | /api/v1/user/verify/:id/:token | verify Email link, was sent by email |
 
 ### Setup Database
 
 First thing Create DataBase as `verify_email_db`, open your terminal or open sql shell
+
 ```shell=1
 $ Psql -h localhost -p 5432 -U postgres
 ```
-Enter Yor Password for user postgres:
 
+Enter Yor Password for user postgres:
 
 ```sql=1
 CREATE DATABASE verify_email_db;
 ```
 
->.env File
+> .env File
 
 ```
 BASE_URL = http://localhost:{your port}/
@@ -381,7 +373,8 @@ MAIL_PASS = passwor_mail
 ```
 
 #### In DataBase Folder
->server\database\config\connection.js
+
+> server\database\config\connection.js
 
 ```js
 const { Sequelize } = require('sequelize');
@@ -422,10 +415,9 @@ if (!DB_BUILD) {
 }
 
 module.exports = sequelize;
-
 ```
 
->server\database\models\index.js
+> server\database\models\index.js
 
 ```js
 const User = require('./users');
@@ -433,7 +425,7 @@ const User = require('./users');
 module.exports = { User };
 ```
 
->server\database\models\user.js
+> server\database\models\user.js
 
 ```js
 const { DataTypes } = require('sequelize');
@@ -462,10 +454,9 @@ const User = sequelize.define('users', {
 });
 
 module.exports = User;
-
 ```
 
->server\database\index.js
+> server\database\index.js
 
 ```js
 const sequelize = require('./config/connection');
@@ -478,9 +469,10 @@ module.exports = {
 ```
 
 ### Setup The Email Transporter
+
 In the utils folder, create email folder then create configration and create templete email.
 
->server\utils\email\index.js
+> server\utils\email\index.js
 
 ```js
 const nodemailer = require('nodemailer');
@@ -513,8 +505,8 @@ const sendEmail = async (to, subject, html) => {
 module.exports = sendEmail;
 ```
 
+> server\utils\email\templates\verifyEmail.js
 
->server\utils\email\templates\verifyEmail.js
 ```js
 const styles = `  <style type="text/css">
 @media only screen and (min-width: 520px) {
@@ -760,13 +752,11 @@ const verifyEmail = (link) => {
 module.exports = {
   verifyEmail,
 };
-
 ```
 
 ### In Folder utils
 
-
->server\utils\jwt.js
+> server\utils\jwt.js
 
 ```js
 const { sign, verify } = require('jsonwebtoken');
@@ -794,10 +784,9 @@ module.exports = {
       });
     }),
 };
-
 ```
 
->server\utils\CustomError.js
+> server\utils\CustomError.js
 
 ```js
 module.exports = {
@@ -808,11 +797,9 @@ module.exports = {
     return error;
   },
 };
-
 ```
 
-
->server\utils\validation\index.js
+> server\utils\validation\index.js
 
 ```js
 const addUserSchema = require('./addUserSchema');
@@ -822,11 +809,9 @@ module.exports = {
   addUserSchema,
   paramsValidation,
 };
-
 ```
 
-
->server\utils\validation\paramsValidation.js
+> server\utils\validation\paramsValidation.js
 
 ```js
 const Joi = require('joi');
@@ -839,8 +824,7 @@ const paramsValidation = Joi.object({
 module.exports = paramsValidation;
 ```
 
-
->server\utils\validation\addUserSchema.js
+> server\utils\validation\addUserSchema.js
 
 ```js
 const Joi = require('joi');
@@ -859,11 +843,9 @@ const addUserSchema = Joi.object({
 });
 
 module.exports = addUserSchema;
-
 ```
 
-
->server\utils\index.js
+> server\utils\index.js
 
 ```js
 const { CustomError } = require('./CustomError');
@@ -879,23 +861,18 @@ module.exports = {
 };
 ```
 
-## Result 
+## Result
 
 After Create new user then will sent email, `Go to Mailtrap` to test it,
 
 ![](https://i.imgur.com/zvHXKgv.png)
 
-
-
 ## Conclusion
 
 in conclusion, as a user when registering in any way, must by default set Column 'verified' false, then after creating it in the database, the app will send an email with has verification link, this link contains the id of this user and token to check if he or not.
 
-when clicked above this link will change the status of the user from false to true, to be verified 
-
+when clicked above this link will change the status of the user from false to true, to be verified
 
 #### [Source Code Github](https://github.com/AhmedQeshta/verification-email-nodejs)
-
-
 
 ###### Powered By : [ Ahmed Qeshta ](https://github.com/AhmedQeshta)
